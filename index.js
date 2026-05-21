@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 dotenv.config();
 
 const uri = process.env.MONGODB_URI;
@@ -65,6 +65,21 @@ async function run() {
       } catch (error) {
         console.error("Error fetching single idea:", error);
         res.status(500).json({ message: "Invalid ID or Server Error" });
+      }
+    });
+
+    app.delete("/ideas/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+
+        const result = await ideaCollection.deleteOne({
+          _id: new ObjectId(id),
+        });
+
+        res.json(result);
+      } catch (error) {
+        console.error("Error deleting idea:", error);
+        res.status(500).json({ message: "Failed to delete idea" });
       }
     });
 
