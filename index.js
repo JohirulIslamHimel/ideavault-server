@@ -83,6 +83,25 @@ async function run() {
       }
     });
 
+    app.patch("/ideas/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const updatedData = req.body;
+
+        console.log("Updating idea ID:", id, "with data:", updatedData);
+
+        const result = await ideaCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: updatedData },
+        );
+
+        res.json(result);
+      } catch (error) {
+        console.error("Error updating idea:", error);
+        res.status(500).json({ message: "Failed to update idea" });
+      }
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
