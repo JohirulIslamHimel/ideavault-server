@@ -41,6 +41,13 @@ async function run() {
 
     app.get("/ideas", async (req, res) => {
       try {
+        const { email } = req.query;
+
+        let query = {};
+        if (email) {
+          query = { userEmail: email };
+        }
+
         const result = await ideaCollection.find().toArray();
         res.json(result);
       } catch (error) {
@@ -99,6 +106,31 @@ async function run() {
       } catch (error) {
         console.error("Error updating idea:", error);
         res.status(500).json({ message: "Failed to update idea" });
+      }
+    });
+
+    app.post("/ideas/:id/comments", async (req, res) => {
+      try {
+        const ideaId = req.params.id;
+        const { text, userEmail, userName } = req.body;
+
+        const newComment = {
+          commentId: new Date().getTime().toString(),
+          text,
+          userEmail,
+          userName: userName || "Anonymous",
+          createdAt: new Date(),
+        };
+
+        const result = await ideaCollection.updateOne(
+          { _id: new ObjectId(ideaId) },
+          { $push: { comments: newComment } },
+        );
+
+        res.json({ success: true, comment: newComment });
+      } catch (error) {
+        console.error("Error adding comment:", error);
+        res.status(500).json({ message: "Failed to add comment" });
       }
     });
 
