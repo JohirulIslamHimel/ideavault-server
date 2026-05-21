@@ -39,6 +39,16 @@ async function run() {
       }
     });
 
+    app.get("/ideas", async (req, res) => {
+      try {
+        const result = await ideaCollection.find().toArray();
+        res.json(result);
+      } catch (error) {
+        console.error("Error fetching ideas:", error);
+        res.status(500).json({ message: "Failed to fetch ideas" });
+      }
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
