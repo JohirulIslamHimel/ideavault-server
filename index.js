@@ -134,6 +134,25 @@ async function run() {
       }
     });
 
+    // Route to delete comments
+    app.delete("/ideas/:id/comments/:commentId", async (req, res) => {
+      try {
+        const { id, commentId } = req.params;
+
+        const result = await ideaCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $pull: { comments: { commentId: commentId } } },
+        );
+
+        res.json({ success: true, result });
+      } catch (error) {
+        console.error("Error deleting comment:", error);
+        res.status(500).json({ message: "Failed to delete comment" });
+      }
+    });
+
+    // Comment edit/update route (PUT)
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
