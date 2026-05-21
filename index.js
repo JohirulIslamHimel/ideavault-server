@@ -23,6 +23,22 @@ async function run() {
   try {
     await client.connect();
 
+    const db = client.db("ideaVaultDB");
+    const ideaCollection = db.collection("ideas");
+
+    app.post("/ideas", async (req, res) => {
+      try {
+        const ideaData = req.body;
+        console.log("Adding new idea:", ideaData);
+
+        const result = await ideaCollection.insertOne(ideaData);
+        res.json(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to save idea" });
+      }
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
