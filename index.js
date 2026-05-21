@@ -49,6 +49,25 @@ async function run() {
       }
     });
 
+    app.get("/ideas/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+
+        const result = await ideaCollection.findOne({
+          _id: new ObjectId(id),
+        });
+
+        if (!result) {
+          return res.status(404).json({ message: "Idea not found" });
+        }
+
+        res.json(result);
+      } catch (error) {
+        console.error("Error fetching single idea:", error);
+        res.status(500).json({ message: "Invalid ID or Server Error" });
+      }
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
